@@ -1,11 +1,8 @@
-/*
-PRACTICA 01 DE REDES 2
-INCISO A: MULTIPLICACIONES DE MATRICES
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>/*PARA USAR time(0)*/
+#include <unistd.h> //PARA USAR sleep(2)
+#include <time.h> //PARA USAR time(0)
+#include <pthread.h> //API THREADS
 
 /*VARIABLES GLOBALES*/
 int **matrixA;
@@ -15,14 +12,14 @@ int A_rows, A_cols;
 int B_rows, B_cols;
 int num_threads;
 
-/*PARAMENTROS DEL HILO*/
-typedef struct param{
-    int ncols;
-    int inicio;
-    int fin;
-}param;
+/*PARMENTROS DEL HILO*/
+typedef struct thread_param{
+    int num_rows; //Numero de filas que le corresponden a cada hilo
+    int start_index; //Índice de la primer fila que le corresponde al hilo
+    int end_index; //Índice de la última fila que le corresponde al hilo
+}thread_param;
 
-/*FUNCION PARA CREAR MATRICES*/
+/*FUNCION PARA CREAR UNA MATRIZ Y RELLENARLA CON VALORES DEL 0 AL 5*/
 int **create_matrix(int rows, int cols){
     int **matrix = (int**)malloc(rows*sizeof(int*));
 	for(int i = 0; i < rows; i++){
@@ -36,33 +33,22 @@ int **create_matrix(int rows, int cols){
     return matrix;
 }
 
-/*IMPRIMIR MATRIZ EN CONSOLA*/
-void print_matrix(int **matrix, int rows, int cols){
-    for (int i = 0; i < rows; i++){
-        for (int j = 0; j < cols; j++){
-            printf("%10d", matrix[i][j]);
-        }
-        printf("\n");
-    }
-}
-
-/*IMPRIMIR MATRIZ EN ARCHIVO*/
-void fprint_matrix(FILE *f, int **matrix, int rows, int cols){
-    if(f != NULL){
+/*IMPRIMIR MATRIZ EN UN ARCHIVO*/
+void fprint_matrix(FILE *file, int **matrix, int rows, int cols){
+    if(file != NULL){
 		for(int i = 0; i < rows; i++){
 			for(int j = 0; j < cols; j++){
-				fprintf(f, "%10d", matrix[i][j]);
+				fprintf(file, "%10d", matrix[i][j]);
 			}
-			fprintf(f,"\n");
+			fprintf(file,"\n");
 		}
 	}
 }
 
-/*HILOS*/
+/*HILO*/
 void *threadf(void *arg) {
-    param *parametro = (param *) arg;
-    printf("A este hilo le toca %d columnas (de %d a %d)\n", parametro->ncols, parametro->inicio, parametro->fin);
-    for (int i = parametro->inicio; i < parametro->fin; i++){
+    thread_param *param = (thread_param *) arg;
+    for (int i = param->start_index; i < param->end_index; i++){ // Solo multiplica las filas que le corresponden
         for (int j = 0; j < B_cols; j++){
             int sum = 0;
             for (int k = 0; k < A_cols; k++){
@@ -79,58 +65,61 @@ void *threadf(void *arg) {
 int main(int argc, char const *argv[]){
     srand(time(0));
     if(argc == 6){
-        FILE *f = fopen("results.txt", "w"); 
-        fprintf(f, "%s","A * B = C\n");
+        /*OBTENEMOS LOS PARAMETROS DESDE CONSOLA*/
         A_rows = atoi(argv[1]);
         A_cols = atoi(argv[2]);
         B_rows = atoi(argv[3]);
         B_cols = atoi(argv[4]);
         num_threads = atoi(argv[5]);
-
+        /*CREAMOS LAS MATRICES*/
         matrixA = create_matrix(A_rows, A_cols);
         matrixB = create_matrix(B_rows, B_cols);
         matrixC = create_matrix(A_rows, B_cols);
-
-        fprintf(f, "%s","the matrix A is:\n");
-        fprint_matrix(f, matrixA, A_rows, A_cols);
-        
-        fprintf(f, "%s","the matrix B is:\n");
-        fprint_matrix(f, matrixB, B_rows, B_cols);
               
         if(A_cols == B_rows && num_threads <= A_rows && num_threads > 0){
             pthread_t threads[num_threads];
+            thread_param params[num_threads];
+            
             int div = A_rows / num_threads;
             int res = A_rows % num_threads;
-
-            param parametros[num_threads];
             int position = 0;
             for (int i = 0; i < num_threads; i++){
                 if(i == 0){
-                    parametros[i].ncols = div + res;
+                    params[i].num_rows = div + res; //Las filas restantes se asignan siempre al primer hilo
                 }else{
-                    parametros[i].ncols = div;
+                    params[i].num_rows = div; //Al resto se le asigna el mismo número
                 }
-                parametros[i].inicio = position;
-                position += parametros[i].ncols;
-                parametros[i].fin = position;
+                //Calculamos la posicion de inicio y de fin de cada fila
+                params[i].start_index = position;
+                position += params[i].num_rows;
+                params[i].end_index = position;
             }
              
             for(int i = 0; i < num_threads; i++ ) {
-                pthread_create(&threads[i], NULL, threadf, &parametros[i]);
+                pthread_create(&threads[i], NULL, threadf, &params[i]);
             }
 
             for(int i = 0; i < num_threads; ++i){
                 pthread_join(threads[i], NULL);
             }
+            
+            /*IMPRIMIMOS EL RESULTADO EN UN ARCHIVO*/
+            FILE *f = fopen("results.txt", "w"); //Archivo en donde vamos a escribir los resultados
+            fprintf(f, "%s","MULTIPLICACIÓN DE MATRICES\n\tA * B = C\n");
+            fprintf(f, "%s","the matrix A is:\n");
+            fprint_matrix(f, matrixA, A_rows, A_cols);
+            fprintf(f, "%s","the matrix B is:\n");
+            fprint_matrix(f, matrixB, B_rows, B_cols);
             fprintf(f, "%s","the matrix C is:\n");
-            printf("the result's saved in result.txt\n");
             fprint_matrix(f, matrixC, A_rows, B_cols);
-        }else{
-            printf("error: this multiplication isn't possible --> A_cols = B_rows && num_threads <= A_rows\n");
-        }
 
+            printf("Se guardo el resultado en result.txt\n");
+        }else{
+            printf("Error: no sé puede realizar la multiplicación con los paramétros especificados\n");
+        }
+        pthread_exit(NULL);
     }else{
-        printf("usage: %s <A_rows> <A_cols> <B_rows> <B_cols> <NUM_THREADS>\n", argv[0]);
+        printf("Faltan paramétros\nUsar así: %s [FilasA] [ColumnasA] [FilasB] [ColumnasB] [NúmeroHilos]\n", argv[0]);
         return 0;
     }
 
