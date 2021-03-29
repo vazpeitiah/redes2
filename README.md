@@ -5,7 +5,7 @@ Repositorio no oficial de la materia de Redes2, impartida por el profesor Rangel
 **PROGRAMA:** ESCOM ISC Plan 2009  
 **Materia:** Aplicaciones para comunicaciones en red  
 **GRUPO:** 3CV7  
-**Período:** Sep 2020 - Ene 2021 Modalidad Online  
+**Período:** 2021-1 (Sep 2020 - Ene 2021) Modalidad Online  
 
 ## Lista de práticas
 
