@@ -1,21 +1,16 @@
 # Aplicaciones para comunicaciones en Red
 
-Materia de la ESCOM del plan 2009. En el ciclo 2021/01
+Repositorio no oficial de la materia de Redes2, impartida por el profesor Rangel de la ESCOM. La materia se impartión en la modalidad online. 
 
-> **Profesor:** RANGEL GONZALEZ JOSUE
+**PROGRAMA:** ESCOM ISC Plan 2009  
+**Materia:** Aplicaciones para comunicaciones en red  
+**GRUPO:** 3CV7  
+**Período:** Sep 2020 - Ene 2021 Modalidad Online  
 
 ## Práticas
 
-| Número | Tema  | Descripción                               | Fecha de entrega |
-|--------|-------|-------------------------------------------|------------------|
-| 1      | Hilos | Imagenes RGB y multiplicación de matrices | 02 Nov 2020      |
-
-## Ejercicios
-
-| Número | Tema  | Descripción                                 | Fecha       |
-|--------|-------|---------------------------------------------|-------------|
-| 1      | Hilos | Imprime "hola mundo" desde un hilo          | 12 Oct 2020 |
-| 2      | Hilos | Enviar parametros a un hilo                 | 15 Oct 2020 |
-| 3      | Hilos | Enviar datos desde un hilo al proceso padre | 19 Oct 2020 |
-| 4      | Hilos | Serie fibonacci                             | 22 Oct 2020 |
-| 5      | Hilos | Multiplicación de matrices                  | 26 Oct 2020 |
+| Número | Descripción                               | Fecha de entrega |
+|--------|-------------------------------------------|------------------|
+| 1 | Imagenes RGB y multiplicación de matrices | 02 nov 2020 |
+| 2 | Practica de semaforos | 30 nov 2020 |
+| 3 | Practica TFTP y Broadcas | 28 ene 2021 |
