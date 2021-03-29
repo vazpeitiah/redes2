@@ -1,6 +1,6 @@
 # Aplicaciones para comunicaciones en Red
 
-Repositorio no oficial de la materia de Redes2, impartida por el profesor Rangel de la ESCOM. La materia se impartión en la modalidad online. 
+Repositorio no oficial de la materia de Redes2, impartida por el profesor Rangel de la ESCOM. La materia fue en la modalidad online o a distancia. 
 
 **PROGRAMA:** ESCOM ISC Plan 2009  
 **Materia:** Aplicaciones para comunicaciones en red  
